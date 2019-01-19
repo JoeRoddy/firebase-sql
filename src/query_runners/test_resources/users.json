@@ -1,0 +1,11 @@
+{
+  "abc": {
+    "email": "ab@c.com",
+    "age": 20
+  },
+  "def": {
+    "email": "de@ef.gov",
+    "age": 25,
+    "isOnline": true
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "fbsql",
+  "version": "1.0.0",
+  "description": "Exectues SQL queries against firebase databases",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel -d dist/ src/",
+    "start": "npm run build && node dist/index.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "firebase",
+    "sql",
+    "javascript"
+  ],
+  "author": "mrjoeroddy@gmail.com",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-env": "^1.7.0",
+    "jest": "^23.6.0"
+  },
+  "dependencies": {
+    "firebase": "^5.8.0",
+    "firebase-admin": "^6.5.0",
+    "lodash": "^4.17.11",
+    "moment": "^2.23.0"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ],
+    "plugins": [
+      "transform-class-properties"
+    ]
+  }
+}
