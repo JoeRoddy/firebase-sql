@@ -2,6 +2,4 @@ node_modules
 yarn.lock
 dist
 
-*db_config.js
-*service_account.json
 
