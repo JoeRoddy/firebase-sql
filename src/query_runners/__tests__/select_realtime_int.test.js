@@ -16,10 +16,13 @@ const users = {
   }
 };
 
-beforeEach(async () => {
-  await clearDb();
-  await injectData("users", users);
+beforeEach(async done => {
   configureFbsql({ shouldExpandResults: false });
+  setTimeout(async () => {
+    await clearDb();
+    await injectData("users", users);
+    done();
+  }, 200);
 });
 
 afterAll(async () => {
@@ -30,17 +33,17 @@ afterAll(async () => {
 // otherwise they'll refire when other tests alter the database.
 // can pass false after call back arg to prevent a listener
 
-test("callback working", done => {
-  configureFbsql({ shouldExpandResults: true });
-  executeSelect(
-    "select * from users",
-    ({ payload, firebaseListener }) => {
-      expect(payload).toEqual(users);
-      done();
-    },
-    false
-  );
-});
+// test("callback working", done => {
+//   configureFbsql({ shouldExpandResults: true });
+//   executeSelect(
+//     "select * from users",
+//     ({ payload, firebaseListener }) => {
+//       expect(payload).toEqual(users);
+//       done();
+//     },
+//     false
+//   );
+// });
 
 test("async working", async () => {
   const data = await executeSelect("select * from users");

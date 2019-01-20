@@ -1,9 +1,12 @@
-import { clearDb, injectData } from "../test_resources/setup_db";
+import { clearDb } from "../test_resources/setup_db";
 import executeInsert from "../insert";
 import executeSelect from "../select";
 
-beforeEach(async () => {
-  await clearDb();
+beforeEach(done => {
+  setTimeout(async () => {
+    await clearDb();
+    done();
+  }, 200);
 });
 
 afterAll(async () => {
@@ -11,19 +14,19 @@ afterAll(async () => {
 });
 
 test("standard insert", async () => {
-  await executeInsert("insert into users (a) values ('b');");
-  const users = await executeSelect("select * from users;");
-  const val = users && users[Object.keys(users)[0]];
+  await executeInsert("insert into k (a) values ('b');");
+  const res = await executeSelect("select * from k;");
+  const val = res && res[Object.keys(res)[0]];
   expect(val).toEqual({ a: "b" });
 });
 
 test("callback based insert", done => {
-  executeInsert("insert into users (c) values ('d');", res => {
+  executeInsert("insert into g (i) values ('d');", res => {
     executeSelect(
-      "select * from users;",
-      users => {
-        const val = users && users[Object.keys(users)[0]];
-        expect(val).toEqual({ c: "d" });
+      "select * from g;",
+      res => {
+        const val = res && res[Object.keys(res)[0]];
+        expect(val).toEqual({ i: "d" });
         done();
       },
       false
