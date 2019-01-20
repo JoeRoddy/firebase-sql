@@ -5,7 +5,7 @@ class FbSql {
     this.database = null;
     this.isAdmin = false;
     this.isFirestore = false;
-    this.shouldCommitResults = false;
+    this.shouldCommitResults = true;
     this.shouldExpandResults = false;
   }
 
@@ -18,19 +18,13 @@ class FbSql {
    * @param {boolean} [params.shouldExpandResults] return query info other than payload?
    */
   configure = params => {
-    const {
-      database,
-      isAdmin,
-      isFirestore,
-      shouldCommitResults,
-      shouldExpandResults
-    } = params;
-
-    this.database = database || this.database;
-    this.isAdmin = isAdmin || false;
-    this.isFirestore = isFirestore || false;
-    this.shouldCommitResults = shouldCommitResults || false;
-    this.shouldExpandResults = shouldExpandResults || false;
+    params &&
+      Object.keys(params).forEach(key => {
+        const val = params[key];
+        if (val || val === false) {
+          this[key] = val;
+        }
+      });
   };
 
   killListeners = () => {};
@@ -55,12 +49,6 @@ class FbSql {
       throw new Error(
         `Must provide a string query argument, ie: execute("SELECT * FROM users")`
       );
-
-    console.log("isFirestore?:", this.isFirestore);
-    console.log("isAdming:", this.isAdmin);
-    console.log("db:", this.database);
-    console.log("shouldCommitResults:", this.shouldCommitResults);
-
     executeQuery(query, this.database, callback, false);
   };
 }

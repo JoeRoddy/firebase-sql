@@ -209,13 +209,11 @@ class QueryParser {
 
     //insert based on select data
     if (/^(insert into )[^\s]+( select).+/i.test(query)) {
-      console.log("SUPER");
-
       const selectStatement = query
         .substring(query.toUpperCase().indexOf("SELECT "))
         .trim();
       executeSelect(selectStatement, selectData => {
-        return callback(selectData.payload);
+        return callback(selectData.payload || selectData);
       });
     } else {
       //traditional insert

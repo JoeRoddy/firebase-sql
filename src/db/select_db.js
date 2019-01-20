@@ -7,6 +7,15 @@ import QueryDetails from "../models/fbSqlQuery";
 
 let app = admin;
 
+const getDataForSelectAsync = query => {
+  query.shouldApplyListener = false;
+  return new Promise((resolve, reject) => {
+    getDataForSelect(query, res => {
+      resolve(res);
+    });
+  });
+};
+
 const getDataForSelect = function(query, callback) {
   const { wheres, selectedFields, isFirestore } = query;
   // const app = startFirebaseApp(databaseSavedData);
@@ -124,8 +133,8 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
 
 const queryEntireRealtimeCollection = function(db, results, query, callback) {
   const { collection, selectedFields, shouldApplyListener } = query;
-  let ref = db.ref(collection);
-  ref[shouldApplyListener ? "on" : "once"]("value", snapshot => {
+  const ref = db.ref(collection);
+  const queryCallback = snapshot => {
     results.payload = snapshot.val();
     if (selectedFields) {
       results.payload = removeNonSelectedFieldsFromResults(
@@ -133,12 +142,18 @@ const queryEntireRealtimeCollection = function(db, results, query, callback) {
         selectedFields
       );
     }
-    results.firebaseListener = {
-      unsubscribe: () => ref.off("value"),
-      type: "realtime"
-    };
+    results.firebaseListener = shouldApplyListener
+      ? {
+          unsubscribe: () => ref.off("value"),
+          type: "realtime"
+        }
+      : null;
     return callback(results);
-  });
+  };
+
+  shouldApplyListener
+    ? ref.on("value", queryCallback)
+    : ref.once("value").then(queryCallback);
 };
 
 const executeFilteredFirestoreQuery = function(db, results, query, callback) {
@@ -173,24 +188,31 @@ const executeFilteredFirestoreQuery = function(db, results, query, callback) {
 };
 
 const executeFilteredRealtimeQuery = function(db, results, query, callback) {
-  const { collection, selectedFields, wheres } = query;
+  const { collection, selectedFields, wheres, shouldApplyListener } = query;
   const mainWhere = wheres[0];
-  let ref = db.ref(collection);
-  ref
+  const ref = db
+    .ref(collection)
     .orderByChild(mainWhere.field)
-    .equalTo(mainWhere.value)
-    .on("value", snapshot => {
-      results.payload = filterWheresAndNonSelectedFields(
-        snapshot.val(),
-        wheres,
-        selectedFields
-      );
-      results.firebaseListener = {
-        unsubscribe: () => ref.off("value"),
-        type: "realtime"
-      };
-      return callback(results);
-    });
+    .equalTo(mainWhere.value);
+
+  const resCallback = snapshot => {
+    results.payload = filterWheresAndNonSelectedFields(
+      snapshot.val(),
+      wheres,
+      selectedFields
+    );
+    results.firebaseListener = shouldApplyListener
+      ? {
+          unsubscribe: () => ref.off("value"),
+          type: "realtime"
+        }
+      : null;
+    return callback(results);
+  };
+
+  shouldApplyListener
+    ? ref.on("value", resCallback)
+    : ref.once("value").then(resCallback);
 };
 
 const filterWheresAndNonSelectedFields = function(
@@ -309,4 +331,4 @@ const determineGreaterOrLess = (val1, val2, comparator) => {
   }
 };
 
-export { getDataForSelect, unfilteredFirestoreQuery };
+export { getDataForSelect, getDataForSelectAsync, unfilteredFirestoreQuery };

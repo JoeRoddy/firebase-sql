@@ -20,11 +20,11 @@ export default function executeQuery(query, db, callback) {
     case SELECT_STATEMENT:
       return executeSelect(query, callback);
     case UPDATE_STATEMENT:
-      return executeUpdate(query, db, callback, shouldCommitResults);
+      return executeUpdate(query, shouldCommitResults, callback);
     case DELETE_STATEMENT:
       return executeDelete(query, db, callback, shouldCommitResults);
     case INSERT_STATEMENT:
-      return executeInsert(query, db, callback, shouldCommitResults);
+      return executeInsert(query, callback);
     default:
   }
 }
