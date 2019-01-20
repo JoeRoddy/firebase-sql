@@ -94,10 +94,10 @@ test("get wheres - no equality check", done => {
   });
 });
 
-test("get sets", () => {
+test("get sets", async () => {
   const query = `update users set height=10, name= "timmy"
         where age<5`;
-  const sets = queryParser.getSets(query);
+  const sets = await queryParser.getSets(query);
   expect(sets).toEqual({ height: 10, name: "timmy" });
 });
 

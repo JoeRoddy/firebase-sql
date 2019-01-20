@@ -1,6 +1,7 @@
 import { clearDb, injectData } from "../test_resources/setup_db";
 import executeSelect from "../select";
 import { configureFbsql } from "../../index";
+import test_timeouts from "../test_resources/test_timeouts";
 
 const users = {
   abc: {
@@ -16,13 +17,16 @@ const users = {
   }
 };
 
-beforeEach(async done => {
-  configureFbsql({ shouldExpandResults: false });
-  setTimeout(async () => {
-    await clearDb();
-    await injectData("users", users);
+beforeAll(done => {
+  setTimeout(() => {
     done();
-  }, 200);
+  }, test_timeouts.select);
+});
+
+beforeEach(async () => {
+  configureFbsql({ shouldExpandResults: false });
+  await clearDb();
+  await injectData("users", users);
 });
 
 afterAll(async () => {
@@ -33,17 +37,17 @@ afterAll(async () => {
 // otherwise they'll refire when other tests alter the database.
 // can pass false after call back arg to prevent a listener
 
-// test("callback working", done => {
-//   configureFbsql({ shouldExpandResults: true });
-//   executeSelect(
-//     "select * from users",
-//     ({ payload, firebaseListener }) => {
-//       expect(payload).toEqual(users);
-//       done();
-//     },
-//     false
-//   );
-// });
+test("callback working", done => {
+  configureFbsql({ shouldExpandResults: true });
+  executeSelect(
+    "select * from users",
+    ({ payload, firebaseListener }) => {
+      expect(payload).toEqual(users);
+      done();
+    },
+    false
+  );
+});
 
 test("async working", async () => {
   const data = await executeSelect("select * from users");

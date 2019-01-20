@@ -1,24 +1,28 @@
 import { clearDb, injectData } from "../test_resources/setup_db";
 import executeQuery from "../../execute";
+import test_timeouts from "../test_resources/test_timeouts";
 
 let localBlogs = {};
 
-beforeEach(async done => {
-  setTimeout(async () => {
-    await clearDb();
-    localBlogs = {
-      blog1: {
-        title: "My first blog",
-        description: "blog descrip"
-      },
-      blog2: {
-        title: "My second blog",
-        description: "wowza"
-      }
-    };
-    await injectData("/blogs", localBlogs);
+beforeAll(done => {
+  setTimeout(() => {
     done();
-  }, 200);
+  }, test_timeouts.update);
+});
+
+beforeEach(async () => {
+  await clearDb();
+  localBlogs = {
+    blog1: {
+      title: "My first blog",
+      description: "blog descrip"
+    },
+    blog2: {
+      title: "My second blog",
+      description: "wowza"
+    }
+  };
+  await injectData("/blogs", localBlogs);
 });
 
 afterAll(async () => {
