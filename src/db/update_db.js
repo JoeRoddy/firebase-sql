@@ -45,8 +45,7 @@ const updateFirestoreFields = function(db, path, object, fields) {
     });
 };
 
-const deleteObject = function(savedDatabase, path, isFirestore) {
-  // const app = startFirebaseApp(savedDatabase);
+const deleteObject = function(path, isFirestore) {
   isFirestore
     ? deleteFirestoreData(app.firestore(), path)
     : app
@@ -87,9 +86,6 @@ const deleteFirestoreField = function(db, collection, docAndField) {
 };
 
 const pushObject = function(path, object, isFirestore) {
-  console.log("pushing object:", object);
-  console.log("to path:", path);
-
   return isFirestore
     ? createFirestoreDocument(app.firestore(), path, object)
     : app

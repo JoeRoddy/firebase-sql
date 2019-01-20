@@ -124,17 +124,12 @@ class QueryParser {
       if (key && val) {
         //set based on select data: update users set field = select field from users.id;
         if (/^\s*\(?(select).+from.+\)?/i.test(val)) {
-          console.log("executing:", val);
           val = await executeQuery(val);
-          console.log("val recieved: ", val);
         }
-
         key = key.replace(".", "/").trim();
         sets[key] = stringHelper.getParsedValue(val.trim(), true);
       }
     });
-    console.log("returning sets:", sets);
-
     return sets;
   }
 

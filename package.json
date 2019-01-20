@@ -6,7 +6,7 @@
   "scripts": {
     "build": "babel -d dist/ src/",
     "start": "npm run build && node dist/index.js",
-    "test": "jest"
+    "test": "jest --noStackTrace"
   },
   "keywords": [
     "firebase",
@@ -34,5 +34,8 @@
     "plugins": [
       "transform-class-properties"
     ]
+  },
+  "jest": {
+    "verbose": false
   }
 }
