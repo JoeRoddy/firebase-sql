@@ -5,22 +5,10 @@ import stringHelper from "../helpers/string_helper";
 
 let app = admin;
 
-const updateFields = function(
-  savedDatabase,
-  path,
-  object,
-  fields,
-  isFirestore
-) {
+const updateFields = function(path, object, fields, isFirestore) {
   if (!fields || !object) {
     return;
   }
-
-  console.log("insertData: ", object);
-  console.log("path:", path);
-  console.log("fields:", fields);
-  console.log("\n\n");
-
   // const app = startFirebaseApp(savedDatabase);
   return isFirestore
     ? updateFirestoreFields(app.firestore(), path, object, fields)

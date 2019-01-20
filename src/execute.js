@@ -9,20 +9,17 @@ import {
   DELETE_STATEMENT
 } from "./constants";
 
-import { getConfig } from "../src/index";
-
-export default function executeQuery(query, db, callback) {
+export default function executeQuery(query, callback) {
   query = queryParser.formatAndCleanQuery(query);
   const statementType = queryParser.determineStatementType(query);
-  const { shouldCommitResults } = getConfig();
 
   switch (statementType) {
     case SELECT_STATEMENT:
       return executeSelect(query, callback);
     case UPDATE_STATEMENT:
-      return executeUpdate(query, shouldCommitResults, callback);
+      return executeUpdate(query, callback);
     case DELETE_STATEMENT:
-      return executeDelete(query, db, callback, shouldCommitResults);
+      return executeDelete(query, callback);
     case INSERT_STATEMENT:
       return executeInsert(query, callback);
     default:

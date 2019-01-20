@@ -8,13 +8,21 @@ import {
 } from "../constants";
 import { getConfig } from "../index";
 import executeSelect from "../query_runners/select";
+import executeQuery from "../execute";
+
 class QueryParser {
   formatAndCleanQuery(query) {
-    //called by App.jsx to remove comments before saving to history
     query = stringHelper.replaceAll(query, /(\/\/|--).+/, "");
     query = query.replace(/\r?\n|\r/g, " ");
     query = query.trim();
+    query = this.removeWrappedParenthesis(query);
     return query;
+  }
+
+  removeWrappedParenthesis(query) {
+    return /^\(.+\)$/.test(query)
+      ? query.substring(1, query.length - 1)
+      : query;
   }
 
   determineStatementType(query) {
@@ -94,7 +102,7 @@ class QueryParser {
     });
   }
 
-  getSets(query) {
+  async getSets(query) {
     const setIndexStart = query.indexOf(" set ") + 1;
     if (setIndexStart < 1) {
       return null;
@@ -111,13 +119,22 @@ class QueryParser {
       );
     }
     let sets = {};
-    setsArr.forEach(item => {
-      let keyValSplit = item.split("=");
-      if (keyValSplit.length === 2) {
-        let key = keyValSplit[0].replace(".", "/").trim();
-        sets[key] = stringHelper.getParsedValue(keyValSplit[1].trim(), true);
+    setsArr.forEach(async item => {
+      let [key, val] = item.split("=");
+      if (key && val) {
+        //set based on select data: update users set field = select field from users.id;
+        if (/^\s*\(?(select).+from.+\)?/i.test(val)) {
+          console.log("executing:", val);
+          val = await executeQuery(val);
+          console.log("val recieved: ", val);
+        }
+
+        key = key.replace(".", "/").trim();
+        sets[key] = stringHelper.getParsedValue(val.trim(), true);
       }
     });
+    console.log("returning sets:", sets);
+
     return sets;
   }
 

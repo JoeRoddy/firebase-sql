@@ -3,42 +3,49 @@ import _ from "lodash";
 import queryParser from "../parser/query_parser";
 import { updateFields } from "../db/update_db";
 import { getDataForSelect } from "../db/select_db";
-import { EQUATION_IDENTIFIERS, FIRESTATION_DATA_PROP } from "../constants";
+import {
+  EQUATION_IDENTIFIERS,
+  FIRESTATION_DATA_PROP,
+  UPDATE_STATEMENT
+} from "../constants";
 import QueryDetails from "../models/fbSqlQuery";
+import { getConfig } from "..";
 
-export default function executeUpdate(query, db, callback, commitResults) {
+export default async function executeUpdate(query, callback) {
   const col = queryParser.getCollection(query, UPDATE_STATEMENT);
   const { collection, isFirestore } = queryParser.checkForCrossDbQuery(col);
-
-  const sets = queryParser.getSets(query);
+  const commitResults = getConfig().shouldCommitResults;
+  const sets = await queryParser.getSets(query);
   if (!sets) {
     return null;
   }
   //   const that = this; do this for queryparser?
-  queryParser.getWheres(query, wheres => {
-    let queryDetails = new QueryDetails();
-    queryDetails.collection = collection;
-    queryDetails.isFirestore = isFirestore;
-    queryDetails.db = db;
-    queryDetails.wheres = wheres;
-    getDataForSelect(queryDetails, dataToAlter => {
-      let data = dataToAlter.payload;
-      let payload = {};
-      Object.keys(data).forEach(objKey => {
-        let updateObj = queryParser.updateItemWithSets(data[objKey], sets);
-        const path = collection + "/" + objKey;
-        if (commitResults) {
-          updateFields(db, path, updateObj, Object.keys(sets), isFirestore);
-        }
-        payload[objKey] = updateObj;
+  return new Promise((resolve, reject) => {
+    queryParser.getWheres(query, wheres => {
+      let queryDetails = new QueryDetails();
+      queryDetails.collection = collection;
+      queryDetails.isFirestore = isFirestore;
+      // queryDetails.db = db;
+      queryDetails.wheres = wheres;
+      getDataForSelect(queryDetails, dataToAlter => {
+        let data = dataToAlter.payload;
+        let payload = {};
+        Object.keys(data).forEach(objKey => {
+          const updateObj = updateItemWithSets(data[objKey], sets);
+          const path = collection + "/" + objKey;
+          if (commitResults) {
+            updateFields(path, updateObj, Object.keys(sets), isFirestore);
+          }
+          payload[objKey] = updateObj;
+        });
+        const results = {
+          statementType: UPDATE_STATEMENT,
+          payload,
+          firebaseListener: dataToAlter.firebaseListener,
+          path: collection
+        };
+        callback ? callback(results) : resolve(results);
       });
-      let results = {
-        statementType: UPDATE_STATEMENT,
-        payload,
-        firebaseListener: dataToAlter.firebaseListener,
-        path: collection
-      };
-      callback(results);
     });
   });
 }
