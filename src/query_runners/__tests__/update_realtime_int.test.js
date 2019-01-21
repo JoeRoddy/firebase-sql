@@ -1,14 +1,7 @@
 import { clearDb, injectData } from "../test_resources/setup_db";
 import executeQuery from "../../execute";
-import test_timeouts from "../test_resources/test_timeouts";
 
 let localBlogs = {};
-
-beforeAll(done => {
-  setTimeout(() => {
-    done();
-  }, test_timeouts.update);
-});
 
 beforeEach(async () => {
   await clearDb();

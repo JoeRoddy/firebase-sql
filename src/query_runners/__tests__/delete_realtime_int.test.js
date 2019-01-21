@@ -1,15 +1,7 @@
 import { clearDb, injectData } from "../test_resources/setup_db";
-import test_timeouts from "../test_resources/test_timeouts";
 import executeQuery from "../../execute";
 
 let testData;
-
-beforeAll(done => {
-  setTimeout(() => {
-    done();
-  }, test_timeouts.delete);
-  //   }, 0);
-});
 
 beforeEach(async () => {
   await clearDb();
@@ -29,9 +21,9 @@ beforeEach(async () => {
   await injectData("/", testData);
 });
 
-// afterAll(async () => {
-//   //   await clearDb();
-// });
+afterAll(async () => {
+  await clearDb();
+});
 
 test("delete entire collection", async () => {
   await executeQuery("delete from collection1");

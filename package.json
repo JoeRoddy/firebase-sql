@@ -6,7 +6,7 @@
   "scripts": {
     "build": "babel -d dist/ src/",
     "start": "npm run build && node dist/index.js",
-    "test": "jest --noStackTrace"
+    "test": "jest --runInBand"
   },
   "keywords": [
     "firebase",

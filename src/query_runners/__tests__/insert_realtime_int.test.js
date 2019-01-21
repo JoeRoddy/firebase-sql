@@ -1,13 +1,6 @@
 import { clearDb } from "../test_resources/setup_db";
 import executeInsert from "../insert";
 import executeSelect from "../select";
-import test_timeouts from "../test_resources/test_timeouts";
-
-beforeAll(done => {
-  setTimeout(() => {
-    done();
-  }, test_timeouts.insert);
-});
 
 beforeEach(async () => {
   await clearDb();

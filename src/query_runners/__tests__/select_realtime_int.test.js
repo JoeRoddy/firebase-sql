@@ -1,7 +1,6 @@
 import { clearDb, injectData } from "../test_resources/setup_db";
 import executeSelect from "../select";
 import { configureFbsql } from "../../index";
-import test_timeouts from "../test_resources/test_timeouts";
 
 const users = {
   abc: {
@@ -16,12 +15,6 @@ const users = {
     bio: "what a guy"
   }
 };
-
-beforeAll(done => {
-  setTimeout(() => {
-    done();
-  }, test_timeouts.select);
-});
 
 beforeEach(async () => {
   configureFbsql({ shouldExpandResults: false });
