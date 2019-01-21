@@ -1,4 +1,4 @@
-require("babel-polyfill");
+require("@babel/polyfill");
 import executeQuery from "./execute";
 
 class FbSql {
