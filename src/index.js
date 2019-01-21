@@ -1,3 +1,4 @@
+require("babel-polyfill");
 import executeQuery from "./execute";
 
 class FbSql {
@@ -53,12 +54,12 @@ class FbSql {
   };
 }
 
-let fbSql = new FbSql();
+let fbsql = new FbSql();
 
-const { configure: configureFbsql, getConfig } = fbSql;
+const { configure: configureFbsql, getConfig } = fbsql;
 
 export { configureFbsql, getConfig };
-export default fbSql.execute;
+export default fbsql.execute;
 
 /** API
  *
