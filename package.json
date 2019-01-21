@@ -16,12 +16,16 @@
   "author": "mrjoeroddy@gmail.com",
   "license": "ISC",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/preset-env": "^7.2.3",
     "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-preset-env": "^1.7.0",
+    "babel-polyfill": "^6.26.0",
     "jest": "^23.6.0"
   },
   "dependencies": {
+    "@babel/runtime": "^7.2.0",
     "firebase": "^5.8.0",
     "firebase-admin": "^6.5.0",
     "lodash": "^4.17.11",
@@ -29,10 +33,11 @@
   },
   "babel": {
     "presets": [
-      "env"
+      "@babel/preset-env"
     ],
     "plugins": [
-      "transform-class-properties"
+      "transform-class-properties",
+      "@babel/transform-runtime"
     ]
   },
   "jest": {
