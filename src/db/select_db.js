@@ -61,6 +61,11 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
     //root query: select * from /;
     db.getCollections()
       .then(collections => {
+        if (collections.length === 0) {
+          // no collections
+          results.payload = null;
+          return callback(results);
+        }
         let numDone = 0;
         let firestoreData = {};
         collections.forEach(collection => {
@@ -77,6 +82,8 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
         });
       })
       .catch(err => {
+        console.log("Err getting cols:", err);
+
         results.error = err.message;
         return callback(results);
       });
