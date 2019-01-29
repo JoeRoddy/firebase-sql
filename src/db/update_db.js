@@ -26,23 +26,11 @@ const updateRealtimeFields = function(db, path, newData, fields) {
 
 const updateFirestoreFields = function(db, path, object, fields) {
   let [col, doc] = path.split(/\/(.+)/); // splits only on first '/' char
-  console.log("path:", path);
-  console.log("col:", col);
-  console.log("doc:", doc);
-  console.log("fields:", fields);
-
-  console.log("new data:", object);
 
   return db
     .collection(col)
     .doc(doc)
-    .set(object)
-    .then(() => {
-      console.log(`doc @ path ${path} successfully updated`);
-    })
-    .catch(error => {
-      console.error(`error updating doc @ ${path} :`, error);
-    });
+    .set(object);
 };
 
 const deleteObject = function(path, isFirestore) {

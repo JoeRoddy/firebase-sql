@@ -27,28 +27,47 @@ export default async function executeUpdate(query, callback) {
       queryDetails.isFirestore = isFirestore;
       // queryDetails.db = db;
       queryDetails.wheres = wheres;
-      getDataForSelect(queryDetails, dataToAlter => {
+      getDataForSelect(queryDetails, async dataToAlter => {
         let data = dataToAlter.payload;
-        let payload = {};
-        Object.keys(data).forEach(objKey => {
-          const updateObj = updateItemWithSets(data[objKey], sets);
-          const path = collection + "/" + objKey;
-          if (commitResults) {
-            updateFields(path, updateObj, Object.keys(sets), isFirestore);
-          }
-          payload[objKey] = updateObj;
-        });
+        const payload = generatePayload(data, sets);
         const results = {
           statementType: UPDATE_STATEMENT,
           payload,
           firebaseListener: dataToAlter.firebaseListener,
           path: collection
         };
-        callback ? callback(results) : resolve(results);
+
+        if (commitResults) {
+          const updatePromises = [];
+          Object.keys(data).forEach(objKey => {
+            const updateObj = payload[objKey];
+            const path = collection + "/" + objKey;
+            const updatePromise = updateFields(
+              path,
+              updateObj,
+              Object.keys(sets),
+              isFirestore
+            );
+            updatePromises.push(updatePromise);
+          });
+          await Promise.all(updatePromises);
+          callback ? callback(results) : resolve(results);
+        } else {
+          callback ? callback(results) : resolve(results);
+        }
       });
     });
   });
 }
+
+const generatePayload = (data, sets) => {
+  const payload = {};
+  Object.keys(data).forEach(objKey => {
+    const updateObj = updateItemWithSets(data[objKey], sets);
+    payload[objKey] = updateObj;
+  });
+  return payload;
+};
 
 export function updateItemWithSets(obj, sets) {
   const that = this;
