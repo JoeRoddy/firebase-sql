@@ -19,7 +19,19 @@ fbsql(`select * from users where online = true;`, onlineUsers => {
 npm install --save fbsql
 ```
 
-Queries should work out of the box as long as you've configured firebase with `firebase.initializeApp()`
+Wherever you initialize firebase:
+
+```js
+import firebase from "firebase/app";
+// firebase-admin: import * as firebase from "firebase-admin";
+import { configureFbsql } from "fbsql";
+
+const firebaseConfig = { ... };
+firebase.initializeApp(config);
+configureFbsql({ app: firebase });
+```
+
+If you run into errors saying `app.database() is not a function`, you may need to import firebase into the file causing the issue: `import firebase from "firebase/app";`
 
 ## Wait, but why?
 
@@ -60,12 +72,10 @@ You have multiple configuration options through the `configureFbsql` function:
 ```javascript
 import fbsql, { configureFbsql } from "fbsql";
 
-// pass any number of options
+// pass any combination of options
 // below are the defaults
 configureFbsql({
-  isAdmin: false, // use firebase-admin? (node)
   isFirestore: false, // use firestore instead of the realtime db?
-  database: null, // TODO:
   shouldCommitResults: true, // commit changes on inserts, updates, deletes?
   shouldExpandResults: false // return a more detailed res obj from queries?
 });
