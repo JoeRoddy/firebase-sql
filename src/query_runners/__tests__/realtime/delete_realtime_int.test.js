@@ -45,3 +45,10 @@ test("delete one prop", async () => {
   delete testData.collection1.item1.a;
   expect(collection1).toEqual(testData.collection1);
 });
+
+test("delete where condition", async () => {
+  await executeQuery("delete from collection1 where b = true;");
+  const collection1 = await executeQuery("select * from collection1;");
+  delete testData.collection1.item2;
+  expect(collection1).toEqual(testData.collection1);
+});
