@@ -1,10 +1,10 @@
 require("@babel/polyfill");
 import executeQuery from "./execute";
-import { firebase } from "./firebase_client";
 
 class FbSql {
   constructor() {
     this.database = null;
+    this.app = null;
     this.isAdmin = false;
     this.isFirestore = false;
     this.shouldCommitResults = true;
@@ -41,7 +41,7 @@ class FbSql {
     };
   };
 
-  getApp = () => firebase;
+  getApp = () => this.app;
 
   /**
    * @param {string} query - SQL query to execute against firebase

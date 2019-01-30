@@ -9,7 +9,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL
 });
-configureFbsql({ isAdmin: true });
+configureFbsql({ isAdmin: true, app: admin });
 
 const firestore = admin.firestore();
 const settings = { timestampsInSnapshots: true };

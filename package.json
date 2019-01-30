@@ -27,7 +27,8 @@
     "firebase": "^5.8.0",
     "firebase-admin": "^6.5.0",
     "lodash": "^4.17.11",
-    "moment": "^2.23.0"
+    "moment": "^2.23.0",
+    "npm": "^6.7.0"
   },
   "devDependencies": {
     "babel-jest": "^23.6.0",
