@@ -1,13 +1,15 @@
 {
   "name": "fbsql",
   "version": "1.0.3",
+  "license": "ISC",
+  "author": "mrjoeroddy@gmail.com",
   "description": "Exectues SQL queries against firebase databases",
-  "main": "index.js",
   "scripts": {
     "build": "rm -rf dist/ && babel -d dist/ src/",
     "start": "npm run build && node dist/index.js",
     "test": "jest --runInBand"
   },
+  "main": "dist/index.js",
   "files": [
     "**/dist/",
     "**/src/",
@@ -18,8 +20,6 @@
     "sql",
     "javascript"
   ],
-  "author": "mrjoeroddy@gmail.com",
-  "license": "ISC",
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
     "@babel/runtime": "^7.2.0",
