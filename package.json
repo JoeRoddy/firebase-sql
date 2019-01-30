@@ -1,6 +1,6 @@
 {
   "name": "fbsql",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "license": "ISC",
   "author": "mrjoeroddy@gmail.com",
   "description": "Exectues SQL queries against firebase databases",
