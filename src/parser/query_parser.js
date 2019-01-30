@@ -163,34 +163,35 @@ class QueryParser {
   getCollection(q, statementType) {
     let query = q.replace(/\(.*\)/, "").trim(); //removes nested selects
     let terms = query.split(" ");
+    const { stripEncasingSlashes: strip } = stringHelper;
     if (statementType === UPDATE_STATEMENT) {
-      return stringHelper.replaceAll(terms[1], /\./, "/");
+      return strip(stringHelper.replaceAll(terms[1], /\./, "/"));
     } else if (statementType === SELECT_STATEMENT) {
       if (terms.length === 2 && terms[0] === "from") {
-        return stringHelper.replaceAll(terms[1], ".", "/");
+        return strip(stringHelper.replaceAll(terms[1], ".", "/"));
       } else if (terms.length === 1) {
         let collection = terms[0].replace(";", "");
-        return stringHelper.replaceAll(collection, /\./, "/");
+        return strip(stringHelper.replaceAll(collection, /\./, "/"));
       }
       let collectionIndexStart = query.indexOf("from ") + 4;
       if (collectionIndexStart < 0) {
         throw "Error determining collection.";
       }
       if (collectionIndexStart < 5) {
-        return stringHelper.replaceAll(terms[0], /\./, "/");
+        return strip(stringHelper.replaceAll(terms[0], /\./, "/"));
       }
       let trimmedCol = query.substring(collectionIndexStart).trim();
       let collectionIndexEnd = trimmedCol.match(/\ |;|$/).index;
       let collection = trimmedCol.substring(0, collectionIndexEnd);
-      return stringHelper.replaceAll(collection, /\./, "/");
+      return strip(stringHelper.replaceAll(collection, /\./, "/"));
     } else if (statementType === INSERT_STATEMENT) {
       let collectionToInsert =
         terms[1].toUpperCase() === "INTO" ? terms[2] : terms[3];
-      return stringHelper.replaceAll(collectionToInsert, /\./, "/");
+      return strip(stringHelper.replaceAll(collectionToInsert, /\./, "/"));
     } else if (statementType === DELETE_STATEMENT) {
       let index = terms.length > 2 ? 2 : 1;
       let term = stringHelper.replaceAll(terms[index], /;/, "");
-      return stringHelper.replaceAll(term, /\./, "/");
+      return strip(stringHelper.replaceAll(term, /\./, "/"));
     }
     throw "Error determining collection.";
   }

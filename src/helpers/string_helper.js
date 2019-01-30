@@ -77,6 +77,17 @@ class StringHelper {
   executeFunction(stringVal) {
     TODO: return null || stringVal;
   }
+
+  // users/ => users, /users => users, users => users, / => /
+  stripEncasingSlashes = string => {
+    let str = string;
+    if (str === "/") return str;
+    let startIndex = 0;
+    let endIndex = str.length;
+    if (str.indexOf("/") === 0) startIndex++;
+    if (str.charAt(str.length - 1) === "/") endIndex--;
+    return str.substring(startIndex, endIndex);
+  };
 }
 
 export default new StringHelper();

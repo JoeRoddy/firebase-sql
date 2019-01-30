@@ -117,6 +117,9 @@ test("get collection", () => {
   const { getCollection: getCol } = queryParser;
   // SELECT
   expect(getCol(`select * from lol;`, SELECT_STATEMENT)).toBe("lol");
+  expect(getCol(`select * from lol/;`, SELECT_STATEMENT)).toBe("lol");
+  expect(getCol(`select * from /lol/;`, SELECT_STATEMENT)).toBe("lol");
+  expect(getCol(`select * from /lol;`, SELECT_STATEMENT)).toBe("lol");
   expect(
     getCol(`select * from c where age = (select a from q);`, SELECT_STATEMENT)
   ).toBe("c");
@@ -126,6 +129,8 @@ test("get collection", () => {
   expect(getCol(`update b.d set age = 2;`, UPDATE_STATEMENT)).toBe("b/d");
   // DELETE
   expect(getCol(`delete from wow;`, SELECT_STATEMENT)).toBe("wow");
+  expect(getCol(`delete from wow/;`, SELECT_STATEMENT)).toBe("wow");
+  expect(getCol(`select * from /;`, SELECT_STATEMENT)).toBe("/");
   expect(getCol(`/`, SELECT_STATEMENT)).toBe("/");
   expect(getCol(`/;`, SELECT_STATEMENT)).toBe("/");
   expect(getCol(`.`, SELECT_STATEMENT)).toBe("/");
