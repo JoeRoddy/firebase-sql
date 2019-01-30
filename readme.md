@@ -28,8 +28,32 @@ Fbsql was extracted from the [Firestation desktop app's](https://github.com/JoeR
 This library may be useful for:
 
 - Developers who prefer SQL syntax to the Firebase APIs
-- Saving time writing complicated functions that could be achieved with a one line SQL statement
 - Building admin tools for managing your database
+- Saving time writing complicated functions that could be achieved with a one line SQL statement
+
+- Improving code clarity:
+
+```js
+// firebase-sql
+const codingBlogs = await fbsql(`select * from blogs where genre = "coding";`);
+
+// firebase (realtime db)
+const snapshot = await firebase
+  .database()
+  .ref("/blogs/")
+  .orderByChild("genre")
+  .equalTo("coding")
+  .once("value");
+const codingBlogs = snapshot.val();
+
+// firebase (firestore)
+const doc = await db
+  .firestore()
+  .collection("blogs")
+  .where("genre", "==", "coding")
+  .get();
+const codingBlogs = doc.data();
+```
 
 ## Configuration
 
