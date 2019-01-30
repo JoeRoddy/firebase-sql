@@ -1,11 +1,7 @@
-import * as admin from "firebase-admin";
-// import { startFirebaseApp } from "./FirebaseDb";
-
+import { getApp } from "../index";
 import stringHelper from "../helpers/string_helper";
 import { isValidDate, executeDateComparison } from "../helpers/date_helper";
 import QueryDetails from "../models/fbSqlQuery";
-
-let app = admin;
 
 const getDataForSelectAsync = query => {
   query.shouldApplyListener = false;
@@ -18,7 +14,7 @@ const getDataForSelectAsync = query => {
 
 const getDataForSelect = function(query, callback) {
   const { wheres, selectedFields, isFirestore } = query;
-  // const app = startFirebaseApp(databaseSavedData);
+  const app = getApp();
   let db = isFirestore ? app.firestore() : app.database();
   //TODO: reimplement listeners, using firestore listeners as well
   let results = {

@@ -40,6 +40,8 @@ class FbSql {
     };
   };
 
+  getApp = () => require(this.isAdmin ? "firebase-admin" : "firebase/app");
+
   /**
    * @param {string} query - SQL query to execute against firebase
    * @param {function} [callback] - optional results callback, applies a listener
@@ -56,9 +58,9 @@ class FbSql {
 
 let fbsql = new FbSql();
 
-const { configure: configureFbsql, getConfig } = fbsql;
+const { configure: configureFbsql, getApp, getConfig } = fbsql;
 
-export { configureFbsql, getConfig };
+export { configureFbsql, getConfig, getApp };
 export default fbsql.execute;
 
 /** API

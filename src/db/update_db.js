@@ -1,15 +1,12 @@
-import * as admin from "firebase-admin";
-
 import stringHelper from "../helpers/string_helper";
-// import { startFirebaseApp } from "./FirebaseDb";
-
-let app = admin;
+import { getApp } from "../index";
 
 const updateFields = function(path, object, fields, isFirestore) {
   if (!fields || !object) {
     return;
   }
   // const app = startFirebaseApp(savedDatabase);
+  const app = getApp();
   return isFirestore
     ? updateFirestoreFields(app.firestore(), path, object, fields)
     : updateRealtimeFields(app.database(), path, object, fields);
@@ -34,6 +31,7 @@ const updateFirestoreFields = function(db, path, object, fields) {
 };
 
 const deleteObject = function(path, isFirestore) {
+  const app = getApp();
   return isFirestore
     ? deleteFirestoreData(app.firestore(), path)
     : app
@@ -63,11 +61,12 @@ const deleteFirestoreField = function(db, collection, docAndField) {
     .collection(collection)
     .doc(doc)
     .update({
-      [field]: admin.firestore.FieldValue.delete()
+      [field]: getApp().firestore.FieldValue.delete()
     });
 };
 
 const pushObject = function(path, object, isFirestore) {
+  const app = getApp();
   return isFirestore
     ? createFirestoreDocument(app.firestore(), path, object)
     : app
@@ -96,7 +95,8 @@ const pushFirestoreDocToGeneratedId = function(db, collection, data) {
 };
 
 const set = function(savedDatabase, path, data, isFirestore) {
-  const app = startFirebaseApp(savedDatabase);
+  const app = getApp();
+
   const db = isFirestore ? app.firestore() : app.database();
   if (isFirestore) {
     let [collection, docId] = path.split(/\/(.+)/);
@@ -109,8 +109,8 @@ const set = function(savedDatabase, path, data, isFirestore) {
 };
 
 const setObjectProperty = function(savedDatabase, path, value, isFirestore) {
+  const app = getApp();
   value = stringHelper.getParsedValue(value);
-  const app = startFirebaseApp(savedDatabase);
   isFirestore
     ? setFirestoreProp(app.firestore(), path, value)
     : app
