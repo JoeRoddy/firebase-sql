@@ -88,11 +88,10 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
         return callback(results);
       });
   } else if (collection.includes("/")) {
-    //select * from collection.document
-    let [col, field] = collection.split(/\/(.+)/);
-    field = stringHelper.replaceAll(field, "/", ".");
-
-    const ref = db.collection(col).doc(field);
+    let [col, docId, ...propPath] = collection.split(`/`);
+    // users.userId.age => col: users, docId:userId, propPath: [age]
+    docId = stringHelper.replaceAll(docId, "/", ".");
+    const ref = db.collection(col).doc(docId);
     const fetchData = shouldApplyListener
       ? listenToFirestoreDoc
       : getFirstoreDocOnce;
@@ -104,7 +103,8 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
           results.error = { message: "No such document" };
           return callback(results);
         }
-        results.payload = docData;
+        results.payload =
+          propPath.length > 0 ? getDataAtPropPath(docData, propPath) : docData;
         if (selectedFields) {
           results.payload = removeNonSelectedFieldsFromResults(
             results.payload,
@@ -146,6 +146,16 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
         return callback(results);
       });
   }
+};
+
+const getDataAtPropPath = (data, propPath = []) => {
+  let propData;
+  propPath.forEach(prop => {
+    let subData = data[prop];
+    if (!subData) return null;
+    propData = subData;
+  });
+  return propData;
 };
 
 const getFirstoreDocOnce = (ref, callback, onErr) => {
