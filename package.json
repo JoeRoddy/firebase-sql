@@ -4,10 +4,15 @@
   "description": "Exectues SQL queries against firebase databases",
   "main": "index.js",
   "scripts": {
-    "build": "babel -d dist/ src/",
+    "build": "rm -rf dist/ && babel -d dist/ src/",
     "start": "npm run build && node dist/index.js",
     "test": "jest --runInBand"
   },
+  "files": [
+    "**/dist/",
+    "**/src/",
+    "**/package.json"
+  ],
   "keywords": [
     "firebase",
     "sql",
