@@ -10,6 +10,10 @@ admin.initializeApp({
   databaseURL
 });
 
+const firestore = admin.firestore();
+const settings = { timestampsInSnapshots: true };
+firestore.settings(settings);
+
 export const clearDb = async isFirestore => {
   return isFirestore
     ? deleteFirestore()
