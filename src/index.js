@@ -40,7 +40,14 @@ class FbSql {
     };
   };
 
-  getApp = () => require(this.isAdmin ? "firebase-admin" : "firebase/app");
+  getApp = () => {
+    // ternary would throw deps errors on web
+    if (this.isAdmin) {
+      return require("firebase-admin");
+    } else {
+      return require("firebase/app");
+    }
+  };
 
   /**
    * @param {string} query - SQL query to execute against firebase
