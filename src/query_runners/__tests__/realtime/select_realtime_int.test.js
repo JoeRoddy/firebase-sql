@@ -17,7 +17,7 @@ const users = {
 };
 
 beforeEach(async () => {
-  configureFbsql({ shouldExpandResults: false });
+  configureFbsql({ shouldExpandResults: false, isFirestore: false });
   await clearDb();
   await injectData("users", users);
 });
@@ -45,6 +45,11 @@ test("callback working", done => {
 test("async working", async () => {
   const data = await executeSelect("select * from users");
   expect(users).toEqual(data);
+});
+
+test("select specific property", async () => {
+  const data = await executeSelect("select * from users.abc.age");
+  expect(users.abc.age).toEqual(data);
 });
 
 test("expanded results working", done => {

@@ -47,6 +47,11 @@ test("async working", async () => {
   expect(users).toEqual(data);
 });
 
+test("select specific property", async () => {
+  const data = await executeSelect("select * from users.abc.age");
+  expect(data).toEqual(users.abc.age);
+});
+
 test("expanded results working", done => {
   configureFbsql({ shouldExpandResults: true });
   executeSelect("select * from users.def", results => {
