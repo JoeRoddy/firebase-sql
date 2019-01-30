@@ -11,16 +11,20 @@ export default function executeInsert(query, callback) {
   const commitResults = getConfig().shouldCommitResults;
 
   return new Promise((resolve, reject) => {
-    queryParser.getObjectsFromInsert(query, insertObjects => {
+    queryParser.getObjectsFromInsert(query, async insertObjects => {
       if (commitResults) {
         let keys = insertObjects && Object.keys(insertObjects);
+        const insertPromises = [];
         for (let i = 1; i < insertCount; i++) {
           //insert clones
-          pushObject(path, insertObjects[keys[0]], isFirestore);
+          const prom = pushObject(path, insertObjects[keys[0]], isFirestore);
+          insertPromises.push(prom);
         }
         for (let key in insertObjects) {
-          pushObject(path, insertObjects[key], isFirestore);
+          const prom = pushObject(path, insertObjects[key], isFirestore);
+          insertPromises.push(prom);
         }
+        await Promise.all(insertPromises);
       }
       let results = {
         insertCount: insertCount,
