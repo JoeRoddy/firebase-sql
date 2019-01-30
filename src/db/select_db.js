@@ -56,9 +56,10 @@ const getDataForSelect = function(query, callback) {
 };
 
 const unfilteredFirestoreQuery = function(db, results, query, callback) {
-  const { collection, selectedFields } = query;
+  const { collection, selectedFields, shouldApplyListener } = query;
   if (collection === "/") {
     //root query: select * from /;
+    // TODO: Listener
     db.getCollections()
       .then(collections => {
         if (collections.length === 0) {
@@ -83,7 +84,6 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
       })
       .catch(err => {
         console.log("Err getting cols:", err);
-
         results.error = err.message;
         return callback(results);
       });
@@ -91,32 +91,42 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
     //select * from collection.document
     let [col, field] = collection.split(/\/(.+)/);
     field = stringHelper.replaceAll(field, "/", ".");
-    db.collection(col)
-      .doc(field)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          results.payload = doc.data();
-          if (selectedFields) {
-            results.payload = removeNonSelectedFieldsFromResults(
-              results.payload,
-              selectedFields
-            );
-          }
-          return callback(results);
-        } else {
-          // doc.data() will be undefined in this case
+
+    const ref = db.collection(col).doc(field);
+    const fetchData = shouldApplyListener
+      ? listenToFirestoreDoc
+      : getFirstoreDocOnce;
+
+    fetchData(
+      ref,
+      ({ docData, unsub }) => {
+        if (!docData) {
           results.error = { message: "No such document" };
           return callback(results);
         }
-      })
-      .catch(() => {
+        results.payload = docData;
+        if (selectedFields) {
+          results.payload = removeNonSelectedFieldsFromResults(
+            results.payload,
+            selectedFields
+          );
+        }
+        if (shouldApplyListener) {
+          results.firebaseListener = {
+            type: "firestore",
+            unsubscribe: () => unsub()
+          };
+        }
+        return callback(results);
+      },
+      err => {
         results.error = { message: "No such document" };
         return callback(results);
-      });
+      }
+    );
   } else {
     //select * from collection
-    //TODO: figure out a way to make this a listener
+    //TODO: listener
     db.collection(collection)
       .get()
       .then(querySnapshot => {
@@ -136,6 +146,19 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
         return callback(results);
       });
   }
+};
+
+const getFirstoreDocOnce = (ref, callback, onErr) => {
+  ref
+    .get()
+    .then(doc => callback({ docData: doc.exists ? doc.data() : null }))
+    .catch(onErr);
+};
+
+const listenToFirestoreDoc = (ref, callback, onErr) => {
+  let unsub = ref.onSnapshot(doc =>
+    callback({ docData: doc.exists ? doc.data() : null, unsub }, onErr)
+  );
 };
 
 const queryEntireRealtimeCollection = function(db, results, query, callback) {
@@ -164,8 +187,9 @@ const queryEntireRealtimeCollection = function(db, results, query, callback) {
 };
 
 const executeFilteredFirestoreQuery = function(db, results, query, callback) {
-  const { collection, selectedFields, wheres } = query;
+  const { collection, selectedFields, wheres, shouldApplyListener } = query;
   const mainWhere = wheres[0];
+  // TODO: promise version
   let unsub = db
     .collection(collection)
     .where(mainWhere.field, mainWhere.comparator, mainWhere.value)
