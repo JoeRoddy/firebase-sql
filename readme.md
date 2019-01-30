@@ -27,10 +27,8 @@ Fbsql was extracted from the [Firestation desktop app's](https://github.com/JoeR
 
 This library may be useful for:
 
-- Developers who prefer SQL syntax to the Firebase APIs
-- Building admin tools for managing your database
+- Developers who prefer SQL syntax to the Firebase API
 - Saving time writing complicated functions that could be achieved with a one line SQL statement
-
 - Improving code clarity:
 
 ```js
