@@ -34,8 +34,6 @@ const updateFirestoreFields = function(db, path, object, fields) {
 };
 
 const deleteObject = function(path, isFirestore) {
-  console.log("isFirestore?", isFirestore);
-
   return isFirestore
     ? deleteFirestoreData(app.firestore(), path)
     : app
@@ -45,8 +43,6 @@ const deleteObject = function(path, isFirestore) {
 };
 
 const deleteFirestoreData = function(db, path) {
-  console.log("DELLLLLLLL", path);
-
   let [collection, doc] = path.split(/\/(.+)/); //splits on first "/"
   return doc.includes("/")
     ? deleteFirestoreField(db, collection, doc)
@@ -54,27 +50,15 @@ const deleteFirestoreData = function(db, path) {
 };
 
 const deleteFirestoreDoc = function(db, collection, doc) {
-  console.log(`delete, col: ${collection}\ndoc: ${doc}`);
   return db
     .collection(collection)
     .doc(doc)
-    .delete()
-    .then(function() {
-      console.log("Document successfully deleted!");
-    })
-    .catch(function(error) {
-      console.error("Error removing document: ", error);
-    });
+    .delete();
 };
 
 const deleteFirestoreField = function(db, collection, docAndField) {
-  console.log("del firestore field");
-  console.log("col:", collection);
-  console.log("docAndField:", docAndField);
-
   let [doc, field] = docAndField.split(/\/(.+)/);
   field = stringHelper.replaceAll(field, "/", ".");
-  console.log(`deleting field, ${field} from col:${collection}, doc: ${doc}`);
   return db
     .collection(collection)
     .doc(doc)
@@ -94,29 +78,21 @@ const pushObject = function(path, object, isFirestore) {
 
 const createFirestoreDocument = function(db, path, data) {
   let [collection, docId] = path.split(/\/(.+)/);
-  docId
+  return docId
     ? setFirestoreDocWithExplicitId(db, collection, docId, data)
     : pushFirestoreDocToGeneratedId(db, collection, data);
 };
 
 const setFirestoreDocWithExplicitId = function(db, collection, docId, data) {
-  console.log(`setting doc ${docId} in collection ${collection}, data:`, data);
-  db.collection(collection)
+  return db
+    .collection(collection)
     .doc(docId)
     .set(data);
 };
 
 const pushFirestoreDocToGeneratedId = function(db, collection, data) {
   collection = collection.replace(/\/+$/, ""); //remove trailing "/"
-  console.log(`pushing to collection ${collection}, data:`, data);
-  db.collection(collection)
-    .add(data)
-    .then(docRef => {
-      console.log("Document written with ID: ", docRef.id);
-    })
-    .catch(error => {
-      console.error("Error adding document: ", error);
-    });
+  return db.collection(collection).add(data);
 };
 
 const set = function(savedDatabase, path, data, isFirestore) {
@@ -152,8 +128,6 @@ const setFirestoreProp = function(db, path, value) {
     //trying to create a new doc from obj tree
     return createFirestoreDocument(db, collection, { [docId]: value });
   }
-
-  console.log(`setting document prop ${field} @ ${collection}/${docId}`);
   db.collection(collection)
     .doc(docId)
     .update({
