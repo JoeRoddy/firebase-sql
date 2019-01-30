@@ -1,5 +1,6 @@
 require("@babel/polyfill");
 import executeQuery from "./execute";
+import { firebase } from "./firebase_client";
 
 class FbSql {
   constructor() {
@@ -40,14 +41,7 @@ class FbSql {
     };
   };
 
-  getApp = () => {
-    // ternary would throw deps errors on web
-    if (this.isAdmin) {
-      return require("firebase-admin");
-    } else {
-      return require("firebase/app");
-    }
-  };
+  getApp = () => firebase;
 
   /**
    * @param {string} query - SQL query to execute against firebase

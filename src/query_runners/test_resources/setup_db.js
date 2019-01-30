@@ -5,11 +5,11 @@ import { configureFbsql } from "../..";
 
 const { databaseURL, serviceAccount } = config;
 
-configureFbsql({ isAdmin: true });
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL
 });
+configureFbsql({ isAdmin: true });
 
 const firestore = admin.firestore();
 const settings = { timestampsInSnapshots: true };
