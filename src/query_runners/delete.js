@@ -18,19 +18,27 @@ export default function executeDelete(query, callback) {
       queryDetails.collection = collection;
       queryDetails.isFirestore = isFirestore;
       queryDetails.wheres = wheres;
-
       const { payload, firebaseListener } = await getDataForSelectAsync(
         queryDetails
       );
+
       if (payload && commitResults) {
         if (["boolean", "number", "string"].includes(typeof payload)) {
           // path is a non-obj data prop, ie: delete from users.userId.height;
-          deleteObject(collection, isFirestore);
+          await deleteObject(collection, isFirestore);
+        } else if (!wheres && collection.indexOf(`/`) > 0) {
+          // unfiltered: delete from users.userId
+          await deleteObject(collection, isFirestore);
         } else {
+          // Use select payload to determine deletes:
+          // entire col: delete from users;
+          // OR filtered: delete from users where age > x;
+          const deletePromises = [];
           Object.keys(payload).forEach(objKey => {
             const path = collection + "/" + objKey;
-            deleteObject(path, isFirestore);
+            deletePromises.push(deleteObject(path, isFirestore));
           });
+          await Promise.all(deletePromises);
         }
       }
       let results = {
