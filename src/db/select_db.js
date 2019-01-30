@@ -199,6 +199,8 @@ const queryEntireRealtimeCollection = function(db, results, query, callback) {
 const executeFilteredFirestoreQuery = function(db, results, query, callback) {
   const { collection, selectedFields, wheres, shouldApplyListener } = query;
   const mainWhere = wheres[0];
+  // TODO: where chaining if we have multiple filterable, rather than client side filter
+  // ie: citiesRef.where("state", "==", "CO").where("name", "==", "Denver")
   // TODO: promise version
   let unsub = db
     .collection(collection)
