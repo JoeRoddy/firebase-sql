@@ -47,7 +47,7 @@ const snapshot = await firebase
 const codingBlogs = snapshot.val();
 
 // firebase (firestore)
-const doc = await db
+const doc = await firebase
   .firestore()
   .collection("blogs")
   .where("genre", "==", "coding")
