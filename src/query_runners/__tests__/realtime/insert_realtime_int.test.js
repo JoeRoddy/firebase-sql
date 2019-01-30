@@ -1,6 +1,6 @@
-import { clearDb } from "../test_resources/setup_db";
-import executeInsert from "../insert";
-import executeSelect from "../select";
+import { clearDb } from "../../test_resources/setup_db";
+import executeInsert from "../../insert";
+import executeSelect from "../../select";
 
 beforeEach(async () => {
   await clearDb();

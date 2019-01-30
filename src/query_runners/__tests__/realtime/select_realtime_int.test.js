@@ -1,6 +1,6 @@
-import { clearDb, injectData } from "../test_resources/setup_db";
-import executeSelect from "../select";
-import { configureFbsql } from "../../index";
+import { clearDb, injectData } from "../../test_resources/setup_db";
+import executeSelect from "../../select";
+import { configureFbsql } from "../../../index";
 
 const users = {
   abc: {

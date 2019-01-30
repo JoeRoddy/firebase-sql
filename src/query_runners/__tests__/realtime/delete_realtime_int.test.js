@@ -1,5 +1,5 @@
-import { clearDb, injectData } from "../test_resources/setup_db";
-import executeQuery from "../../execute";
+import { clearDb, injectData } from "../../test_resources/setup_db";
+import executeQuery from "../../../execute";
 
 let testData;
 
