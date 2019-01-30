@@ -34,7 +34,9 @@ const updateFirestoreFields = function(db, path, object, fields) {
 };
 
 const deleteObject = function(path, isFirestore) {
-  isFirestore
+  console.log("isFirestore?", isFirestore);
+
+  return isFirestore
     ? deleteFirestoreData(app.firestore(), path)
     : app
         .database()
@@ -43,15 +45,18 @@ const deleteObject = function(path, isFirestore) {
 };
 
 const deleteFirestoreData = function(db, path) {
+  console.log("DELLLLLLLL", path);
+
   let [collection, doc] = path.split(/\/(.+)/); //splits on first "/"
-  doc.includes("/")
+  return doc.includes("/")
     ? deleteFirestoreField(db, collection, doc)
     : deleteFirestoreDoc(db, collection, doc);
 };
 
 const deleteFirestoreDoc = function(db, collection, doc) {
   console.log(`delete, col: ${collection}\ndoc: ${doc}`);
-  db.collection(collection)
+  return db
+    .collection(collection)
     .doc(doc)
     .delete()
     .then(function() {
@@ -63,10 +68,15 @@ const deleteFirestoreDoc = function(db, collection, doc) {
 };
 
 const deleteFirestoreField = function(db, collection, docAndField) {
+  console.log("del firestore field");
+  console.log("col:", collection);
+  console.log("docAndField:", docAndField);
+
   let [doc, field] = docAndField.split(/\/(.+)/);
   field = stringHelper.replaceAll(field, "/", ".");
   console.log(`deleting field, ${field} from col:${collection}, doc: ${doc}`);
-  db.collection(collection)
+  return db
+    .collection(collection)
     .doc(doc)
     .update({
       [field]: admin.firestore.FieldValue.delete()
