@@ -28,7 +28,7 @@ afterAll(async () => {
 
 // important: must make sure callback queries are not listeners,
 // otherwise they'll refire when other tests alter the database.
-// can pass false after call back arg to prevent a listener
+// can pass false after callback arg to prevent a listener
 
 test("callback working", done => {
   configureFbsql({ shouldExpandResults: true });
@@ -50,6 +50,17 @@ test("async working", async () => {
 test("select specific property", async () => {
   const data = await executeSelect("select * from users.abc.age");
   expect(users.abc.age).toEqual(data);
+});
+
+test("select certain fields", async () => {
+  const data = await executeSelect("select email, age from users");
+  Object.keys(data).forEach(id => {
+    const user = data[id];
+    expect(user.age).toBeTruthy();
+    expect(user.email).toBeTruthy();
+    expect(user.isOnline).toBeUndefined();
+    expect(user.bio).toBeUndefined();
+  });
 });
 
 test("expanded results working", done => {
