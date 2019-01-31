@@ -101,18 +101,11 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
         }
         results.payload =
           propPath.length > 0 ? getDataAtPropPath(docData, propPath) : docData;
-        if (selectedFields) {
-          results.payload = removeNonSelectedFieldsFromResults(
-            results.payload,
-            selectedFields
-          );
-        }
-        if (shouldApplyListener) {
-          results.firebaseListener = {
-            type: "firestore",
-            unsubscribe: () => unsub()
-          };
-        }
+        results = removeFieldsAndApplyUnsub(results, selectedFields, {
+          type: "firestore",
+          unsub
+        });
+
         return callback(results);
       },
       err => {
@@ -122,26 +115,46 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
     );
   } else {
     //select * from collection
-    //TODO: listener
-    db.collection(collection)
-      .get()
-      .then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          results.payload[doc.id] = doc.data();
+    const fetchData = shouldApplyListener
+      ? listenToFirestoreCol
+      : getFirstoreColOnce;
+
+    fetchData(
+      db.collection(collection),
+      ({ data, unsub }) => {
+        results.payload = data;
+        results = removeFieldsAndApplyUnsub(results, selectedFields, {
+          type: "firestore",
+          unsub
         });
-        if (selectedFields) {
-          results.payload = removeNonSelectedFieldsFromResults(
-            results.payload,
-            selectedFields
-          );
-        }
         return callback(results);
-      })
-      .catch(err => {
+      },
+      err => {
         results.error = err.message;
         return callback(results);
-      });
+      }
+    );
   }
+};
+
+const removeFieldsAndApplyUnsub = (
+  results,
+  selectedFields,
+  { type, unsub }
+) => {
+  if (selectedFields) {
+    results.payload = removeNonSelectedFieldsFromResults(
+      results.payload,
+      selectedFields
+    );
+  }
+  if (type && unsub) {
+    results.firebaseListener = {
+      type,
+      unsubscribe: () => unsub()
+    };
+  }
+  return results;
 };
 
 const getDataAtPropPath = (data, propPath = []) => {
@@ -165,6 +178,29 @@ const listenToFirestoreDoc = (ref, callback, onErr) => {
   let unsub = ref.onSnapshot(doc =>
     callback({ docData: doc.exists ? doc.data() : null, unsub }, onErr)
   );
+};
+
+const getFirstoreColOnce = (ref, callback, onErr) => {
+  ref
+    .get()
+    .then(snapshot => {
+      let data = {};
+      snapshot.forEach(doc => {
+        data[doc.id] = doc.data();
+      });
+      return callback({ data });
+    })
+    .catch(onErr);
+};
+
+const listenToFirestoreCol = (ref, callback, onErr) => {
+  let unsub = ref.onSnapshot(snapshot => {
+    let data = {};
+    snapshot.forEach(doc => {
+      data[doc.id] = doc.data();
+    });
+    return callback({ data, unsub });
+  }, onErr);
 };
 
 const queryEntireRealtimeCollection = function(db, results, query, callback) {
