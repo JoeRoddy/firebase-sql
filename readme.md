@@ -26,8 +26,8 @@ import firebase from "firebase/app";
 // firebase-admin: import * as firebase from "firebase-admin";
 import { configureFbsql } from "fbsql";
 
-const firebaseConfig = { ... };
-firebase.initializeApp(config);
+const firebaseConfig = {...};
+firebase.initializeApp(firebaseConfig);
 configureFbsql({ app: firebase });
 ```
 
