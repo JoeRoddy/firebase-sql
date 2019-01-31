@@ -3,7 +3,6 @@ import executeQuery from "./execute";
 
 class FbSql {
   constructor() {
-    this.database = null;
     this.app = null;
     this.isFirestore = false;
     this.shouldCommitResults = true;
@@ -12,7 +11,7 @@ class FbSql {
 
   /**
    * @param {object} params - fbsql configuration
-   * @param {object} [params.database] your firebase database instance
+   * @param {object} [params.app] your firebase app
    * @param {boolean} [params.isFirestore] run queries against firestore?
    * @param {boolean} [params.shouldCommitResults] commit results on inserts, updates, deletes?
    * @param {boolean} [params.shouldExpandResults] return query info other than payload?
@@ -31,7 +30,7 @@ class FbSql {
 
   getConfig = () => {
     return {
-      database: this.database,
+      app: this.app,
       isFirestore: this.isFirestore,
       shouldCommitResults: this.shouldCommitResults,
       shouldExpandResults: this.shouldExpandResults
@@ -50,7 +49,7 @@ class FbSql {
       throw new Error(
         `Must provide a string query argument, ie: execute("SELECT * FROM users")`
       );
-    executeQuery(query, this.database, callback, false);
+    return executeQuery(query, callback, false);
   };
 }
 

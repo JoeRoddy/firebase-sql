@@ -11,13 +11,13 @@ import {
   DELETE_STATEMENT
 } from "./constants";
 
-export default function executeQuery(query, callback) {
+export default function executeQuery(query, callback, shouldApplyListener) {
   query = queryParser.formatAndCleanQuery(query);
   const statementType = queryParser.determineStatementType(query);
 
   switch (statementType) {
     case SELECT_STATEMENT:
-      return executeSelect(query, callback);
+      return executeSelect(query, callback, shouldApplyListener);
     case UPDATE_STATEMENT:
       return executeUpdate(query, callback);
     case DELETE_STATEMENT:
