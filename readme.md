@@ -7,6 +7,7 @@ import fbsql from "fbsql";
 
 // async:
 const codingBlogs = await fbsql(`select * from blogs where genre = "coding";`);
+
 // or apply a listener:
 fbsql(`select * from users where online = true;`, onlineUsers => {
   // handle realtime updates...
