@@ -9,7 +9,7 @@ import fbsql from "fbsql";
 const codingBlogs = await fbsql(`select * from blogs where genre = "coding";`);
 // or apply a listener:
 fbsql(`select * from users where online = true;`, onlineUsers => {
-  //...
+  // handle realtime updates...
 });
 ```
 
@@ -18,20 +18,6 @@ fbsql(`select * from users where online = true;`, onlineUsers => {
 ```bash
 npm install --save fbsql
 ```
-
-Wherever you initialize firebase:
-
-```js
-import firebase from "firebase/app";
-// firebase-admin: import * as firebase from "firebase-admin";
-import { configureFbsql } from "fbsql";
-
-const firebaseConfig = {...};
-firebase.initializeApp(firebaseConfig);
-configureFbsql({ app: firebase });
-```
-
-If you run into errors saying `app.database() is not a function`, you may need to import firebase into the file causing the issue: `import firebase from "firebase/app";`
 
 ## Wait, but why?
 
@@ -47,7 +33,7 @@ This library may be useful for:
 // firebase-sql
 const codingBlogs = await fbsql(`select * from blogs where genre = "coding";`);
 
-// firebase (realtime db)
+// realtime db
 const snapshot = await firebase
   .database()
   .ref("/blogs/")
@@ -56,7 +42,7 @@ const snapshot = await firebase
   .once("value");
 const codingBlogs = snapshot.val();
 
-// firebase (firestore)
+// firestore
 const doc = await firebase
   .firestore()
   .collection("blogs")
@@ -64,6 +50,20 @@ const doc = await firebase
   .get();
 const codingBlogs = doc.data();
 ```
+
+## Setup
+
+Wherever you initialize firebase:
+
+```js
+import firebase from "firebase/app"; // import * as firebase from "firebase-admin";
+import { configureFbsql } from "fbsql";
+
+firebase.initializeApp({ your config... });
+configureFbsql({ app: firebase });
+```
+
+If you run into errors saying `app.database() is not a function`, you may need to import firebase into the file causing the issue. `import firebase from "firebase/app";`
 
 ## Configuration
 
@@ -75,7 +75,7 @@ import fbsql, { configureFbsql } from "fbsql";
 // pass any combination of options
 // below are the defaults
 configureFbsql({
-  app: null // reference to firebase (either firebase or firebase-admin)
+  app: null // your firebase app
   isFirestore: false, // use firestore instead of the realtime db?
   shouldCommitResults: true, // commit changes on inserts, updates, deletes?
   shouldExpandResults: false // return a more detailed res obj from queries?
