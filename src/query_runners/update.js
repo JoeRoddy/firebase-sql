@@ -37,7 +37,7 @@ export default async function executeUpdate(query, callback) {
           path: collection
         };
 
-        if (commitResults) {
+        if (commitResults && data) {
           const updatePromises = [];
           Object.keys(data).forEach(objKey => {
             const updateObj = payload[objKey];
@@ -62,10 +62,11 @@ export default async function executeUpdate(query, callback) {
 
 const generatePayload = (data, sets) => {
   const payload = {};
-  Object.keys(data).forEach(objKey => {
-    const updateObj = updateItemWithSets(data[objKey], sets);
-    payload[objKey] = updateObj;
-  });
+  data &&
+    Object.keys(data).forEach(objKey => {
+      const updateObj = updateItemWithSets(data[objKey], sets);
+      payload[objKey] = updateObj;
+    });
   return payload;
 };
 
