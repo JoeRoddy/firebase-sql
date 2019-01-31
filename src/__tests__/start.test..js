@@ -7,10 +7,13 @@ test("imports working", () => {
 });
 
 test("configure working", () => {
-  configureFbsql({ isAdmin: true, isFirestore: true });
-  const { isAdmin, isFirestore, database, shouldExpandResults } = getConfig();
-  expect(isAdmin).toBeTruthy();
+  configureFbsql({
+    isFirestore: true,
+    shouldCommitResults: true,
+    shouldExpandResults: false
+  });
+  const { isFirestore, shouldCommitResults, shouldExpandResults } = getConfig();
   expect(isFirestore).toBeTruthy();
-  expect(database).toBeNull();
+  expect(shouldCommitResults).toBeTruthy();
   expect(shouldExpandResults).toBeFalsy();
 });

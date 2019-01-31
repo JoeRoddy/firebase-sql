@@ -75,6 +75,7 @@ import fbsql, { configureFbsql } from "fbsql";
 // pass any combination of options
 // below are the defaults
 configureFbsql({
+  app: null // reference to firebase (either firebase or firebase-admin)
   isFirestore: false, // use firestore instead of the realtime db?
   shouldCommitResults: true, // commit changes on inserts, updates, deletes?
   shouldExpandResults: false // return a more detailed res obj from queries?
