@@ -42,14 +42,19 @@ class FbSql {
   /**
    * @param {string} query - SQL query to execute against firebase
    * @param {function} [callback] - optional results callback, applies a listener
+   * @param {boolean} [shouldApplyListener] - passing false after callback prevents listening
    * @returns {Promise} Promise object with results
    */
-  execute = (query, callback) => {
+  execute = (query, callback, shouldApplyListener) => {
     if (!query)
       throw new Error(
         `Must provide a string query argument, ie: execute("SELECT * FROM users")`
       );
-    return executeQuery(query, callback, false);
+    return executeQuery(
+      query,
+      callback,
+      callback && shouldApplyListener !== false
+    );
   };
 }
 
